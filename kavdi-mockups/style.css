@@ -1,0 +1,35 @@
+*{
+  box-sizing: border-box;
+}
+body {
+  background-image: url(../img/j-background.jpg);
+  color: rgb(247, 250, 255);
+}
+
+.title {
+  font-size: 2em;
+  color: rgb(210, 218, 219);
+}
+
+.time-stamp {
+  color: rgb(177, 190, 239);
+}
+
+.text {
+  color: white;
+  width: 40%;
+}
+
+.e-title {
+  width: 150px;
+  height: 35px;
+  font-size: 2em;
+  margin-right: 100%
+}
+
+.e-text {
+  width: 40%;
+  height: 100px;
+  margin-top: 25px;
+  margin-right: 100%;
+}
