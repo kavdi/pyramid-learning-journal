@@ -1,6 +1,7 @@
 """."""
+import pytest
 from pyramid import testing
-from default import (
+from learning_journal.views.default import (
     list_view,
     detail_view,
     create_view,
@@ -8,9 +9,10 @@ from default import (
 )
 
 
-def dummy_request(dbsession):
+@pytest.fixture
+def dummy_request():
     """Create a dummy request to the server."""
-    return testing.DummyRequest(dbsession=dbsession)
+    return testing.DummyRequest()
 
 
 def test_list_view_response_status_code_200_ok(dummy_request):
@@ -46,7 +48,7 @@ def test_list_view_response_text_has_proper_content_type(dummy_request):
 def test_list_view_response_text_has_proper_content(dummy_request):
     """Test that list view returns expected content."""
     response = list_view(dummy_request)
-    text = '<h1>Mark\'s Thoughtful Spot</h1>'
+    text = '<div class="time-stamp">author, date and time created</div>'
     assert text in response.ubody
 
 
@@ -59,7 +61,7 @@ def test_detail_view_response_text_has_proper_content_type(dummy_request):
 def test_detail_view_response_text_has_proper_content(dummy_request):
     """Test that list view returns expected content."""
     response = detail_view(dummy_request)
-    text = '<h2 class="section-heading">Learning all the Things</h2>'
+    text = '<div class="time-stamp">date time author</div>'
     assert text in response.ubody
 
 
@@ -72,5 +74,5 @@ def test_create_view_response_text_has_proper_content_type(dummy_request):
 def test_create_view_response_text_has_proper_content(dummy_request):
     """Test that list view returns expected content."""
     response = create_view(dummy_request)
-    text = '<p>Alright, self, create a awesome blog post here!</p>'
+    text = '<button type="button" name="submit">Submit</button>'
     assert text in response.ubody
