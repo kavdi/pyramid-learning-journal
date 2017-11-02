@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="../static/style.css"/>
-    <title>Pyramid Learning Journal</title>
-    <h1>Learnin Journal</h1>
-  </head>
-  <body>
-    <a href="/create/id"><button type="button" name="new">Add a new Entry</button></a>
-    <div class="j-entry">
-      <h2 class="title">{{ Title }}<a href="/journal/id"><button type="button" name="view">View</button></a></h2>
-      <div class="time-stamp"><p>Created On {{ Created }}</p></div>
-    </div>
-  </body>
-</html>
+{% extends "layout.jinja2" %}
+
+{% block content %}
+{% for post in posts %}
+ <div class="card" style="width: 20rem;">
+  <div class="card-body">
+    <h4 class="card-title">{{ post.title }}</h4>
+    <h6 class="card-subtitle mb-2 text-muted">{{ author }}: {{ post.date }}</h6>
+    <p class="card-text">{{ post.text }}</p>
+    <a href="#" class="card-link">View</a>
+    <a href="#" id="{{ post_id }}" class="card-link">Edit</a>
+  </div>
+</div>
+{% endfor %}
+{% endblock %} 
