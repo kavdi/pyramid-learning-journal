@@ -2,14 +2,14 @@
 
 {% block content %}
 <form method="post">
-     <div class="card" style="width: 20rem;">
+     <div class="card" style="width: 30rem;">
       <div class="card-body">
         <h4 class="card-title"><input name="title" type="text" placeholder="Title"></h4>
         <h3 class="author"><input type="text" name="author" placeholder="Author"></h3>
         <h6 class="card-subtitle mb-2 text-muted" name="date">{{ date }}</h6>
         <textarea name="text" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Blog Post"></textarea>
+        <button type="submit" class="btn btn-success">Submit</button>
       </div>
     </div>
-    <button type="submit" class="submit">Submit</button>
 </form>
 {% endblock %} 
