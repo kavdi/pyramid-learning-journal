@@ -10,6 +10,7 @@ FMT = '%Y/%m/%d'
 @view_config(route_name='home', renderer="learning_journal:templates/home_page.jinja2")
 def list_view(request):
     posts = request.dbsession.query(MyModel).all()
+    posts = [item.to_dict() for item in posts]
     return {
         "Title": "Blogs",
         "posts": reversed(posts)
@@ -19,11 +20,11 @@ def list_view(request):
 @view_config(route_name='detail', renderer="learning_journal:templates/view_entry.jinja2")
 def detail_view(request):
     posts_id = int(request.matchdict['id'])
-    posts = request.dbsession.query(MyModel).get(posts_id)
-    if posts:
+    post = request.dbsession.query(MyModel).get(posts_id)
+    if post:
         return {
             'title': 'Edit Post',
-            'post': posts
+            'post': post.to_dict()
         }
     raise HTTPNotFound
 
@@ -50,26 +51,26 @@ def create_view(request):
 def update_view(request):
     posts_id = int(request.matchdict['id'])
     posts = request.dbsession.query(MyModel).get(posts_id)
-    if request.method == "POST" and request.POST:
-        post = request.POST
-        posts.title = post['title'],
-        posts.date = datetime.now(),
-        posts.text = post['text']
+    if posts:
+        if request.method == "POST" and request.POST:
+            post = request.POST
+            posts.title = post['title'],
+            posts.text = post['text']
 
-        request.dbsession.flush()
-        return HTTPFound(request.route_url('detail', id=posts.id))
-    return {
-        'title': 'Edit Post',
-        'post': posts
-    }
+            request.dbsession.flush()
+            return HTTPFound(request.route_url('detail', id=posts.id))
+        return {
+            'title': 'Edit Post',
+            'post': posts.to_dict()
+        }
+    raise HTTPNotFound
 
 
 @view_config(route_name='delete')
 def delete_post(request):
     posts_id = int(request.matchdict['id'])
-    posts = request.dbsession.query(MyModel).get(posts_id)
-    if not posts:
+    post = request.dbsession.query(MyModel).get(posts_id)
+    if not post:
         raise HTTPNotFound
-
-    request.dbsession.delete(posts)
+    request.dbsession.delete(post)
     return HTTPFound(request.route_url('home'))

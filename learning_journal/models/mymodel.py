@@ -1,6 +1,5 @@
 from sqlalchemy import (
     Column,
-    Index,
     Integer,
     Unicode,
     DateTime,
@@ -17,5 +16,12 @@ class MyModel(Base):
     date = Column(DateTime)
     text = Column(Unicode)
 
-
-Index('my_index', MyModel.title, unique=True, mysql_length=255)
+    def to_dict(self):
+        """Take all model attributes and render them as a dictionary."""
+        return {
+            'id': self.id,
+            'title': self.title,
+            'augthor': self.author,
+            'date': self.date.strftime('%B %d, %Y'),
+            'text': self.text
+        }
