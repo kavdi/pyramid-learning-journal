@@ -1,81 +1,69 @@
-"""."""
+
+"""Test default.py."""
 from pyramid.testing import DummyRequest
-import pytest
 from datetime import datetime
-from bs4 import BeautifulSoup
+from pyramid.httpexceptions import HTTPNotFound
+from learning_journal.models.meta import Base
+from learning_journal.models.mymodel import MyModel
+from pyramid import testing
+import pytest
+FMT = '%m/%d/%Y'
 
 
-def test_home_list_view_shows_list_of_titles_in_dict():
+@pytest.fixture(scope='session')
+def configuration(request):
+    """Set up a Configurator instance."""
+    config = testing.setUp(settings={
+        'sqlalchemy.url': 'postgres://localhost:5432/test_learning_journal'
+    })
+    config.include("learning_journal.models")
+    config.include("learning_journal.routes")
+
+    def teardown():
+        testing.tearDown()
+
+    request.addfinalizer(teardown)
+    return config
+
+
+@pytest.fixture(scope='session')
+def db_session(configuration, request):
+    """Create a session for interacting with the test database."""
+    SessionFactory = configuration.registry["dbsession_factory"]
+    session = SessionFactory()
+    engine = session.bind
+    Base.metadata.create_all(engine)
+
+    def teardown():
+        session.transaction.rollback()
+        Base.metadata.drop_all(engine)
+
+    request.addfinalizer(teardown)
+    return session
+
+
+@pytest.fixture(scope='session')
+def dummy_request(db_session):
+    """Instantiate a fake HTTP Request, complete with a database session."""
+    return testing.DummyRequest(dbsession=db_session)
+
+
+def test_list_view_returns_list_of_journals_in_dict(dummy_request):
+    """Test if list view returns dictionary with word 'title'."""
     from learning_journal.views.default import list_view
-    req = DummyRequest()
-    response = list_view(req)
-    assert 'posts' in response
-    assert isinstance(response['posts'], list)
-
-
-def test_home_lists_view_includes_title():
-    from learning_journal.views.default import list_view
-    req = DummyRequest()
-    response = list_view(req)
-    assert 'title' in response['posts'][0]
-
-
-def test_edit_lists_view_includes_title():
-    from learning_journal.views.default import update_view
-    req = DummyRequest()
-    req.matchdict['id'] = 2
-    response = update_view(req)
-    assert 'title' in response['post']
-
-
-def test_view_includes_post_title():
-    from learning_journal.views.default import detail_view
-    req = DummyRequest()
-    req.matchdict['id'] = 3
-    response = detail_view(req)
-    assert 'Day 3' in response['post']['title']
-
-
-def test_creat_view_includes_post_title():
-    from learning_journal.views.default import create_view
-    req = DummyRequest()
-    response = create_view(req)
+    response = list_view(dummy_request)
     assert isinstance(response, dict)
 
 
-@pytest.fixture
-def testapp():
-    from webtest import TestApp
-    from pyramid.config import Configurator
-
-    def main():
-        config = Configurator()
-        config.include('pyramid_jinja2')
-        config.include('.routes')
-        config.scan()
-        return config.make_wsgi_app()
-
-    app = main()
-    return TestApp(app)
-
-
-def test_home_route_has_h4_titles(testapp):
-    from learning_journal.data.blog_post import POSTS
-    response = testapp.get("/")
-    assert len(POSTS) == len(response.html.find_all('h4'))
-
-
-def test_detail_view_route_has_text(testapp):
-    response = testapp.get("/journal/9")
-    assert "cookiecutter... pyramids...deques..." in str(response.html)
-
-
-def test_edit_view_route_has_correct_title(testapp):
-    response = testapp.get("/update/2")
-    assert "Day 2" in str(response.html)
-
-
-def test_create_view_has_no_current_date(testapp):
-    response = testapp.get("/create")
-    soup = BeautifulSoup(response.text, 'html.parser')
-    assert soup.find('form')
+# def test_journal_exists(dummy_request):
+#     from learning_journal.views.default import list_view
+#     new_entry = MyModel(
+#         id=11,
+#         title='Something Awesome',
+#         creation_date=datetime.strptime("11/02/2017", FMT),
+#         body='Some random letters and what not.'
+#     )
+#     dummy_request.dbsession.add(new_entry)
+#     dummy_request.dbsession.commit()
+#     response = list_view(dummy_request)
+#     assert new_entry.to_dict() in response['posts']
