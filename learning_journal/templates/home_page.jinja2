@@ -9,6 +9,7 @@
     {# <p class="card-text">{{ post.text }}</p> #}
     <a href="{{ request.route_url('detail', id=post.id) }}" class="card-link">View</a>
     <a href="{{ request.route_url('update', id=post.id) }}" id="{{ post.id }}" class="card-link">Edit</a>
+    <a href="{{ request.route_url('delete', id=post.id) }}" id="{{ post.id }}" class="card-link">Delete</a>
   </div>
 </div>
 {% endfor %}
