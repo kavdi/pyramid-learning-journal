@@ -58,10 +58,10 @@ def test_list_view_returns_list_of_journals_in_dict(dummy_request):
 # def test_journal_exists(dummy_request):
 #     from learning_journal.views.default import list_view
 #     new_entry = MyModel(
-#         id=11,
 #         title='Something Awesome',
-#         creation_date=datetime.strptime("11/02/2017", FMT),
-#         body='Some random letters and what not.'
+#         author='kavdi',
+#         date=datetime.strptime("11/02/2017", FMT),
+#         text='Some random letters and what not.'
 #     )
 #     dummy_request.dbsession.add(new_entry)
 #     dummy_request.dbsession.commit()
