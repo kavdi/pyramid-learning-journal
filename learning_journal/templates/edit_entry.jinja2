@@ -1,0 +1,14 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<form>
+     <div class="card" style="width: 20rem;">
+      <div class="card-body">
+        <h4 class="card-title"><input type="text" placeholder="Title">{{ post.title }}</h4>
+        <h6 class="card-subtitle mb-2 text-muted">{{ post.date }}</h6>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">{{ post.text }}</textarea>
+      </div>
+    </div>
+    <button type="submit" class="submit">Submit</button>
+</form>
+{% endblock %} 

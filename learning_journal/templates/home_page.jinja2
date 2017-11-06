@@ -1,0 +1,15 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+{% for post in posts %}
+ <div class="card" style="width: 20rem;">
+  <div class="card-body">
+    <h4 class="card-title">{{ post.title}}</h4>
+    <h6 class="card-subtitle">{{ post.author }}: {{ post.date }}</h6>
+    {# <p class="card-text">{{ post.text }}</p> #}
+    <a href="{{ request.route_url('detail', id=post.id) }}" class="card-link">View</a>
+    <a href="{{ request.route_url('update', id=post.id) }}" id="{{ post.id }}" class="card-link">Edit</a>
+  </div>
+</div>
+{% endfor %}
+{% endblock %} 
