@@ -43,7 +43,7 @@ def create_view(request):
         return HTTPFound(request.route_url('home'))
     return {
         'title': 'Create Blog Post',
-        'date': datetime.now()
+        'date': datetime.now().strftime('%B %d, %Y')
     }
 
 

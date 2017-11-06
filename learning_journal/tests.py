@@ -41,7 +41,6 @@ def db_session(configuration, request):
     return session
 
 
-@pytest.fixture(scope='session')
 def dummy_request(db_session):
     """Instantiate a fake HTTP Request, complete with a database session."""
     return testing.DummyRequest(dbsession=db_session)
