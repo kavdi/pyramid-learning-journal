@@ -79,6 +79,29 @@ def test_list_view_contains_new_data_added(dummy_request):
     assert new_post.to_dict() in response['posts']
 
 
+def test_list_view_contains_both_data_sets_added(dummy_request):
+    """Test if both entries sent through the request is added to the db."""
+    from learning_journal.views.default import list_view
+    new_post = MyModel(
+        title='The real struggle',
+        author='bobby',
+        date=datetime.now(),
+        text='Once upon a time.. there was a test!'
+    )
+    dummy_request.dbsession.add(new_post)
+    dummy_request.dbsession.commit()
+    new_post = MyModel(
+        title='The second one',
+        author='Tom',
+        date=datetime.now(),
+        text='I wanted to be the first.'
+    )
+    dummy_request.dbsession.add(new_post)
+    dummy_request.dbsession.commit()
+    response = list_view(dummy_request)
+    assert len(list(response['posts'])) == 2
+
+
 def test_detail_view_returns_dict(dummy_request):
     """Test if detail view returns dictionary."""
     from learning_journal.views.default import detail_view
@@ -165,6 +188,46 @@ def test_update_view_returns_title_of_single_entry(dummy_request):
     assert response['post']['title'] == 'The real struggle'
 
 
+def test_update_view_returns_text_of_single_entry(dummy_request):
+    """Test if update view text of single item chosen."""
+    from learning_journal.views.default import update_view
+    new_post = MyModel(
+        title='The real struggle',
+        author='bobby',
+        date=datetime.now(),
+        text='Once upon a time.. there was a test!'
+    )
+    dummy_request.dbsession.add(new_post)
+    dummy_request.dbsession.commit()
+    dummy_request.matchdict['id'] = 1
+    response = update_view(dummy_request)
+    assert response['post']['text'] == 'Once upon a time.. there was a test!'
+
+
+def test_update_view_returns_text_of_entry_with_id_of_two(dummy_request):
+    """Test if update view text of single item chosen."""
+    from learning_journal.views.default import update_view
+    new_post = MyModel(
+        title='The real struggle',
+        author='bobby',
+        date=datetime.now(),
+        text='Once upon a time.. there was a test!'
+    )
+    dummy_request.dbsession.add(new_post)
+    dummy_request.dbsession.commit()
+    new_post = MyModel(
+        title='Number Two',
+        author='Kenny',
+        date=datetime.now(),
+        text='one, two, three...!'
+    )
+    dummy_request.dbsession.add(new_post)
+    dummy_request.dbsession.commit()
+    dummy_request.matchdict['id'] = 2
+    response = update_view(dummy_request)
+    assert response['post']['text'] == 'one, two, three...!'
+
+
 def test_update_view_raises_exception_id_not_found(dummy_request):
     """Test if update raises exception on non-existent id."""
     from learning_journal.views.default import update_view
@@ -225,3 +288,11 @@ def test_list_view_has_20_entries(testapp, fill_the_db):
     """Test that database has 20 entries in it."""
     response = testapp.get('/')
     assert len(response.html.find_all('div', 'card')) == 20
+
+
+# def test_detail_view_shows_correct_entry(testapp, fill_the_db):
+#     """"Test that detail view for id 1 shows the first entry."""
+#     response = testapp.get('/journal/1')
+#     print('here')
+#     import pdb;pdb.set_trace()
+#     print(response)
