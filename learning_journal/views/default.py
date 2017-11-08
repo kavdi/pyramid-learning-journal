@@ -5,7 +5,7 @@ from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from learning_journal.models.mymodel import MyModel
 from learning_journal.security import security_check
 from pyramid.security import remember, forget
-from pyramid.security import NO_PERMISSION_REQUIRED
+import os
 
 FMT = '%Y/%m/%d'
 
@@ -88,12 +88,14 @@ def delete_post(request):
 
 
 @view_config(route_name="login",
-             renderer="learning_journal:templates/login.jinja2",
-             permission=NO_PERMISSION_REQUIRED)
+             renderer="learning_journal:templates/login.jinja2")
 def login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        # import pdb; pdb.set_trace()
+        # print(password, username)
+        print(os.environ.get('AUTH_PASSWORD'), os.environ.get('AUTH_USERNAME'))
         if security_check(username, password):
             headers = remember(request, username)
             return HTTPFound(location=request.route_url('home'),
