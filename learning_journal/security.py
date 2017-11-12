@@ -36,7 +36,7 @@ def includeme(config):
         secret=auth_secret,
         hashalg='sha512'
     )
-    session_secret = os.environ.get('SESSION_SECRET', 'itsaseekrit')
+    session_secret = os.environ.get('SESSION_SECRET', 'imaghost')
     session_factory = SignedCookieSessionFactory(session_secret)
     config.set_session_factory(session_factory)
     config.set_default_csrf_options(require_csrf=True)
