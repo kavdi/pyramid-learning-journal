@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Journal entries."""
 from datetime import datetime
 
@@ -39,7 +40,7 @@ POSTS = [
         "title": "Day 7",
         "id": 6,
         "author": "kavdi",
-        "text": "Stacks!.... soo linked lists that can only be accessed from he head? haha seemed pretty straight forward and was easy to implement since we had everything done for he linked lists. Still having a couple dumb issues with the sockets and http requests and response.. but so far i don’t feel out of depth. Keeping up with the reading helps soooooo much. Anyways back to reading and hopefully learning some more. My brain is so full rn though...",
+        "text": "Stacks.... soo linked lists that can only be accessed from he head? haha seemed pretty straight forward and was easy to implement since we had everything done for he linked lists. Still having a couple dumb issues with the sockets and http requests and response.. but so far i don’t feel out of depth. Keeping up with the reading helps soooooo much. Anyways back to reading and hopefully learning some more. My brain is so full rn though...",
     },
     {
         "title": "Day 6",
