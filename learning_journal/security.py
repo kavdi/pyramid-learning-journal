@@ -3,6 +3,7 @@
 import os
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.session import SignedCookieSessionFactory
 from pyramid.security import Everyone, Authenticated, Allow
 from passlib.apps import custom_app_context as pwd_context
 
@@ -35,8 +36,11 @@ def includeme(config):
         secret=auth_secret,
         hashalg='sha512'
     )
+    session_secret = os.environ.get('SESSION_SECRET', 'itsaseekrit')
+    session_factory = SignedCookieSessionFactory(session_secret)
+    config.set_session_factory(session_factory)
+    config.set_default_csrf_options(require_csrf=True)
     config.set_authentication_policy(authn_policy)
-    # add the following new lines of configuration and the new import above.
     authz_policy = ACLAuthorizationPolicy()
     config.set_authorization_policy(authz_policy)
     config.set_default_permission('view')
