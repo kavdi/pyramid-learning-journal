@@ -9,14 +9,22 @@
   <body>
     <h1>Write it down... I promise it helps.</h1>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      {% if request.authenticated_userid %}
       <a class="navbar-brand" href="{{ request.route_url('create') }}">Create Post</a>
+      {% else %}
+      <a class="navbar-brand" href="{{ request.route_url('login') }}">Log in</a>
+      {% endif %}
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
           <a class="nav-item nav-link active" href="{{ request.route_url('home') }}">Home <span class="sr-only">(current)</span></a>
+          {% if request.authenticated_userid %}
+          <a class="nav-item nav-link active" href="{{ request.route_url('logout') }}">Log out <span class="sr-only">(current)</span></a>
+          {% else %}
           <a class="nav-item nav-link" href="#">About</a>
+          {% endif %}
         </div>
       </div>
     </nav>

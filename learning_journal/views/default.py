@@ -3,11 +3,16 @@ from pyramid.view import view_config
 from datetime import datetime
 from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from learning_journal.models.mymodel import MyModel
+from learning_journal.security import security_check
+from pyramid.security import remember, forget
+import os
 
 FMT = '%Y/%m/%d'
 
 
-@view_config(route_name='home', renderer="learning_journal:templates/home_page.jinja2")
+@view_config(route_name='home',
+             permission='view',
+             renderer="learning_journal:templates/home_page.jinja2")
 def list_view(request):
     posts = request.dbsession.query(MyModel).all()
     posts = [item.to_dict() for item in posts]
@@ -17,7 +22,9 @@ def list_view(request):
     }
 
 
-@view_config(route_name='detail', renderer="learning_journal:templates/view_entry.jinja2")
+@view_config(route_name='detail',
+             permission='view',
+             renderer="learning_journal:templates/view_entry.jinja2")
 def detail_view(request):
     posts_id = int(request.matchdict['id'])
     post = request.dbsession.query(MyModel).get(posts_id)
@@ -29,7 +36,9 @@ def detail_view(request):
     raise HTTPNotFound
 
 
-@view_config(route_name="create", renderer="learning_journal:templates/crea_entry.jinja2")
+@view_config(route_name="create",
+             permission='secret',
+             renderer="learning_journal:templates/crea_entry.jinja2")
 def create_view(request):
     if request.method == "POST" and request.POST:
         post = request.POST
@@ -43,11 +52,13 @@ def create_view(request):
         return HTTPFound(request.route_url('home'))
     return {
         'title': 'Create Blog Post',
-        'date': datetime.now()
+        'date': datetime.now().strftime('%B %d, %Y')
     }
 
 
-@view_config(route_name="update", renderer="learning_journal:templates/edit_entry.jinja2")
+@view_config(route_name="update",
+             permission='secret',
+             renderer="learning_journal:templates/edit_entry.jinja2")
 def update_view(request):
     posts_id = int(request.matchdict['id'])
     posts = request.dbsession.query(MyModel).get(posts_id)
@@ -66,7 +77,7 @@ def update_view(request):
     raise HTTPNotFound
 
 
-@view_config(route_name='delete')
+@view_config(route_name="delete", permission='secret')
 def delete_post(request):
     posts_id = int(request.matchdict['id'])
     post = request.dbsession.query(MyModel).get(posts_id)
@@ -74,3 +85,25 @@ def delete_post(request):
         raise HTTPNotFound
     request.dbsession.delete(post)
     return HTTPFound(request.route_url('home'))
+
+
+@view_config(route_name="login",
+             renderer="learning_journal:templates/login.jinja2")
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        # import pdb; pdb.set_trace()
+        # print(password, username)
+        print(os.environ.get('AUTH_PASSWORD'), os.environ.get('AUTH_USERNAME'))
+        if security_check(username, password):
+            headers = remember(request, username)
+            return HTTPFound(location=request.route_url('home'),
+                             headers=headers)
+    return {}
+
+
+@view_config(route_name='logout')
+def logout(request):
+    headers = forget(request)
+    return HTTPFound(request.route_url('home'), headers=headers)

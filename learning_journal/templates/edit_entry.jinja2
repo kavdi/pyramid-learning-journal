@@ -4,6 +4,7 @@
 <form method="post">
      <div class="card" style="width: 30rem;">
       <div class="card-body">
+        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}" />
         <h4 class="card-title"><input name="title" type="text" value="{{ post.title }}"></h4>
         <h3 class="author">{{ post.author }}</h3>
         <h6 class="card-subtitle mb-2 text-muted">{{ post.date }}</h6>
